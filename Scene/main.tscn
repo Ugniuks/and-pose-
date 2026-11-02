@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://cg8cgmgyjppns"]
+
+[ext_resource type="Texture2D" uid="uid://c1gme1yj0lo0v" path="res://Texture/texture_07.png" id="1_f6udf"]
+[ext_resource type="PackedScene" uid="uid://l2o5lktuqemu" path="res://Scene/player.tscn" id="2_sblpm"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sblpm"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_r34rm"]
+sky_material = SubResource("ProceduralSkyMaterial_sblpm")
+
+[sub_resource type="Environment" id="Environment_2wwxx"]
+background_mode = 2
+sky = SubResource("Sky_r34rm")
+glow_enabled = true
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_3owqy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sblpm"]
+albedo_texture = ExtResource("1_f6udf")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r34rm"]
+albedo_texture = ExtResource("1_f6udf")
+uv1_triplanar = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_8upip"]
+material = SubResource("StandardMaterial3D_r34rm")
+size = Vector2(40, 40)
+orientation = 1
+
+[node name="Main" type="Node3D" unique_id=1211874749]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=873970357]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=641065659]
+environment = SubResource("Environment_2wwxx")
+
+[node name="WorldFloor" type="StaticBody3D" parent="." unique_id=1334527178]
+collision_layer = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WorldFloor" unique_id=1815200803]
+shape = SubResource("WorldBoundaryShape3D_3owqy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldFloor" unique_id=1984172868]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04962015, 0.031171799, -0.010064125)
+material_override = SubResource("StandardMaterial3D_sblpm")
+mesh = SubResource("QuadMesh_8upip")
+
+[node name="Player" parent="." unique_id=1338610085 instance=ExtResource("2_sblpm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="." unique_id=772157435]
+use_collision = true
+collision_layer = 2
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D" unique_id=304974905]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.212145, 0.3214321, -1.578125)
+size = Vector3(4.8496094, 0.5949707, 4.15625)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGCombiner3D" unique_id=543111550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.212145, 1.4539394, -7.826311)
+size = Vector3(4.8496094, 2.8599854, 4.15625)
