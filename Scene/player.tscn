@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://l2o5lktuqemu"]
 
-[ext_resource type="Script" uid="uid://dcu28vr5ocn3b" path="res://Sricpts/Player1.gd" id="1_y8w33"]
+[ext_resource type="Script" uid="uid://dcu28vr5ocn3b" path="res://Sricpts/Player.gd" id="1_y8w33"]
 [ext_resource type="PackedScene" uid="uid://pb507lwf5pc" path="res://Scene/Camera.tscn" id="2_y8w33"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_3owqy"]

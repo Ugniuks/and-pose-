@@ -1,72 +1,34 @@
 extends CharacterBody3D
 
-var input_direction : Vector2
-var speed : float
+const MOUSE_SENS: float = 0.2
+const MAX_SPEED: float = 10
+const ACCEL: float = 5
 
-@export var look_sensitivity: float = 0.005
-@export var walk_speed = 5.0
-@export var sprint_speed = 10.0
-@export var sneak_speed = 2.0
-@export var acceleration = 60.0
-@export var jump_velocity = 4.5
-@export var air_control = 5.0
-@export var air_resistance = 2.0
+var cur_speed: float = 0
 
-@onready var head = $Head
-@onready var camera = $Head/Camera3D
-
-func _ready():
+#makes the cursor go bye bye
+func  _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-func _unhandled_input(event):
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		head.rotate_y(-event.relative.x * look_sensitivity)
-		camera.rotate_x(-event.relative.y * look_sensitivity)
-		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-80), deg_to_rad(80))
+#moves camera left/right 
+func _input(event) -> void:
+	if event is InputEventMouseMotion:
+		rotation_degrees.y -= event.relative.x * MOUSE_SENS
 
-	if Input.is_action_just_pressed("escape"):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-
-	if event is InputEventMouseButton and event.pressed:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-func _physics_process(delta):
-	# Apply gravity when in the air
+#basic movement
+func _physics_process(delta) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-
-	# Handle Sprint
-	if Input.is_action_pressed("sprint") and is_on_floor():
-		speed = sprint_speed
-	elif Input.is_action_pressed("sneak"):
-		speed = sneak_speed
-	else:
-		speed = walk_speed
+	var input_direction: Vector2 = Input.get_vector("left", "right", "down", "up")
+	var move_direction: Vector3 = (transform.basis * Vector3(input_direction.x, 0, -1 * input_direction.y)).normalized()
 	
-	# Handle jump
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-
-	# Get direction input
-	input_direction = Input.get_vector("left", "right", "up", "down")
-	var direction = (head.transform.basis * Vector3(input_direction.x, 0, input_direction.y)).normalized()
-	
-	# Calculate movement
-	var target_velocity = direction * speed
-	var horizontal_velocity = Vector3(velocity.x, 0, velocity.z)
-
-	if is_on_floor():
-		# Ground movement
-		horizontal_velocity = horizontal_velocity.move_toward(target_velocity, acceleration * delta)
-		velocity.x = horizontal_velocity.x
-		velocity.z = horizontal_velocity.z
+	if move_direction:
+		cur_speed = move_toward(cur_speed, MAX_SPEED, ACCEL * delta)
+		velocity.x = cur_speed * move_direction.x
+		velocity.z = cur_speed * move_direction.z
 	else:
-		# Air movement
-		if direction:
-			horizontal_velocity = horizontal_velocity.move_toward(target_velocity, air_control * delta)
-		
-		horizontal_velocity = horizontal_velocity.move_toward(Vector3.ZERO, air_resistance * delta)
-		velocity.x = horizontal_velocity.x
-		velocity.z = horizontal_velocity.z
+		cur_speed = 0
+		velocity.x = 0
+		velocity.z = 0
 	
 	move_and_slide()
